@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#080a08">
+<title>AI Overlord — Level-Up Protocol</title>
+<style>
+:root{--bg:#080a08;--panel:#151a14;--green:#b8ff38;--gold:#f5c451;--text:#f2f5ef;--muted:#929b8d;--red:#ff4141;--border:#30382d}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:radial-gradient(ellipse at top,#192316,var(--bg) 65%);color:var(--text);font-family:Arial,sans-serif;letter-spacing:.5px;min-height:100vh;padding:env(safe-area-inset-top) 14px calc(86px + env(safe-area-inset-bottom))}
+button{font:inherit;font-weight:800;letter-spacing:.7px;cursor:pointer;border:1px solid #48523e;border-radius:14px;padding:15px 12px;min-height:48px;color:var(--text);background:#20271d;touch-action:manipulation}
+button:active{transform:scale(.98)}
+button:disabled{opacity:.5}
+.app{max-width:600px;margin:auto}
+header{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid var(--border);color:var(--green);font-size:12px;font-weight:900;letter-spacing:2px}
+.live{display:inline-block;width:8px;height:8px;background:var(--green);border-radius:50%;margin-right:7px;box-shadow:0 0 12px var(--green)}
+.card{background:linear-gradient(140deg,rgba(255,255,255,.085),rgba(255,255,255,.025));border:1px solid rgba(255,255,255,.12);border-radius:22px;padding:19px;margin:14px 0;box-shadow:inset 0 1px rgba(255,255,255,.08),0 12px 30px #0004;backdrop-filter:blur(18px)}
+.eyebrow{font-size:10px;font-weight:900;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
+h1{font-size:clamp(26px,7vw,38px);margin:9px 0;color:var(--green)}
+h2{font-size:19px;margin:8px 0}
+p{font-size:13px;line-height:1.65;color:var(--muted)}
+.bigtime{font:900 clamp(42px,12vw,66px)/1.2 monospace;letter-spacing:-3px;color:var(--green);text-align:center;margin:12px 0}
+.gold{color:var(--gold)}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.track{height:8px;border-radius:99px;background:#30372b;overflow:hidden;margin:12px 0}
+.fill{height:100%;width:0;background:linear-gradient(90deg,var(--green),var(--gold));transition:width .3s}
+.rank{font-weight:900;color:var(--green);margin-top:8px}
+.xp{font:900 25px monospace;color:var(--gold)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{padding:14px;border-radius:15px;background:#ffffff08;border:1px solid var(--border)}
+.stat strong{display:block;font:900 28px monospace;color:var(--green);margin-top:8px}
+.primary{background:var(--green);color:#11170b;border-color:var(--green)}
+.goldbtn{background:var(--gold);color:#171106;border-color:var(--gold)}
+.danger{background:#401515;color:#ff7777;border-color:#8a3030}
+.success{background:#19ed69;color:#04160a}
+.hidden{display:none!important}
+.view{animation:fade .18s ease-out}
+@keyframes fade{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.exercise{font-size:clamp(27px,7vw,40px);font-weight:1000;text-align:center;margin:24px 0}
+.center{text-align:center}
+.timer{font:900 58px monospace;text-align:center;color:var(--green)}
+.buttons{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.full{width:100%;margin-top:10px}
+.quest{border-color:#6b5421;background:linear-gradient(140deg,#f5c45116,#ffffff04)}
+.nav{position:fixed;z-index:5;bottom:0;left:0;right:0;padding:10px 8px calc(10px + env(safe-area-inset-bottom));background:#090c09ed;border-top:1px solid var(--border);backdrop-filter:blur(20px);display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+.nav button{border:0;background:transparent;min-height:54px;padding:8px 2px;font-size:10px;color:var(--muted)}
+.nav button.active{color:var(--green);background:#b8ff3810}
+.nav span{display:block;font-size:19px;margin-bottom:4px}
+.history-item{display:flex;gap:10px;align-items:center;padding:13px 0;border-bottom:1px solid var(--border)}
+.history-icon{width:34px;height:34px;flex-shrink:0;border-radius:10px;background:#b8ff3818;color:var(--green);display:grid;place-items:center;font-weight:900}
+.history-icon.fail{background:#ff414118;color:var(--red)}
+.history-detail{flex:1;min-width:0}
+.history-detail strong{font-size:12px}
+.history-detail small{display:block;color:var(--muted);margin-top:5px;font-size:10px}
+.setting{padding:14px 0;border-bottom:1px solid var(--border)}
+.switch{width:55px;min-height:34px;padding:4px;border-radius:30px;background:#30372b}
+.switch:after{content:"";display:block;width:23px;height:23px;border-radius:50%;background:#999;transition:transform .2s}
+.switch.on{background:#526d26}
+.switch.on:after{background:var(--green);transform:translateX(20px)}
+.overlay{position:fixed;z-index:10;inset:0;display:grid;place-items:center;padding:22px;background:#050805ef;text-align:center}
+.overlay .box{width:min(100%,430px);padding:25px;border-radius:26px;background:#171d15;border:1px solid #ffffff30}
+.overlay h1{font-size:clamp(45px,13vw,78px)}
+.gameover{background:radial-gradient(circle,#9b1010,#170000)}
+.gameover h1{color:white;animation:pulse .6s infinite alternate}
+@keyframes pulse{to{text-shadow:0 0 30px white;transform:scale(1.04)}}
+#toast{position:fixed;z-index:30;bottom:90px;left:50%;transform:translateX(-50%);padding:12px 18px;border-radius:12px;background:var(--green);color:#111;font-size:12px;font-weight:900;white-space:nowrap}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+<header><span><i class="live"></i>AI OVERLORD</span><span id="systemStatus">SYSTEM ONLINE</span></header>
+
+<section class="card">
+ <div class="row"><div><div class="eyebrow">Operator rank</div><div id="rankName" class="rank">ROOKIE OPERATIVE</div></div><div class="xp"><span id="xp">0</span> XP</div></div>
+ <div class="track"><div id="xpBar" class="fill"></div></div>
+ <div class="row"><small class="eyebrow" id="rankProgress">0 XP TO NEXT RANK</small><small class="eyebrow">STREAK <b id="streak">0</b></small></div>
+</section>
+
+<main>
+<section class="view" id="home">
+ <div class="card center">
+  <div class="eyebrow">24-hour mission countdown</div>
+  <div id="missionTimer" class="bigtime">24:00:00</div>
+  <div class="track"><div id="missionBar" class="fill" style="width:100%"></div></div>
+  <div class="eyebrow" style="margin-top:18px">Local time</div>
+  <h2 id="clock" class="gold">--:--:--</h2>
+  <p id="date"></p>
+  <div class="grid">
+   <div class="stat"><div class="eyebrow">To midnight</div><strong id="midnight">--:--:--</strong></div>
+   <div class="stat"><div class="eyebrow">Workouts cleared</div><strong id="completed">0</strong></div>
+  </div>
+ </div>
+
+ <div id="moving" class="card hidden center" style="border-color:var(--gold)">
+  <h2 class="gold">⚡ MOVING TIME ACTIVATED</h2>
+  <p>Your 7 AM movement phase is active. Move safely and take breaks whenever needed.</p>
+  <button class="goldbtn full" id="doneMoving">I'M DONE MOVING</button>
+ </div>
+
+ <div class="card">
+  <div class="eyebrow">Current directive</div>
+  <h1 id="directive">MOVE OUT.</h1>
+  <p id="directiveText">Your next workout order will appear automatically. You can also start one whenever you are ready.</p>
+  <button class="primary full" id="startWorkout">START WORKOUT</button>
+  <button class="danger full" id="jogFail">FAIL / TRIGGER GAME OVER</button>
+  <p id="nextOrder" class="center">NEXT ORDER: RANDOMIZED</p>
+ </div>
+
+ <div class="card hidden" id="workoutCard">
+  <div class="eyebrow center">Assigned workout</div>
+  <div id="exercise" class="exercise">BODYWEIGHT SQUATS</div>
+  <div id="workoutTimer" class="timer">05:00</div>
+  <div class="track"><div id="workoutBar" class="fill"></div></div>
+  <p id="instructions" class="center">Use controlled movements. Stop if you feel pain or unwell.</p>
+  <div class="buttons"><button class="success" id="successBtn">SUCCESS</button><button class="danger" id="failBtn">FAIL</button></div>
+ </div>
+
+ <div class="card">
+  <div class="eyebrow">Jumping-jack tracker</div>
+  <div class="row"><h2><span id="jacks">0</span> / 200</h2><button class="goldbtn" id="addJacks">+10</button></div>
+  <div class="track"><div id="jackBar" class="fill"></div></div>
+  <button class="full" id="resetJacks">RESET TRACKER</button>
+ </div>
+</section>
+
+<section class="view hidden" id="progressView">
+ <div class="card"><div class="eyebrow">Operator profile</div><h1>YOUR PROGRESS</h1><p>Every completed workout earns 100 XP. Clear three workouts to finish the daily quest and receive a bonus.</p>
+  <div class="grid">
+   <div class="stat"><div class="eyebrow">Total XP</div><strong id="totalXP">0</strong></div>
+   <div class="stat"><div class="eyebrow">Failures</div><strong id="failures">0</strong></div>
+   <div class="stat"><div class="eyebrow">Streak</div><strong id="streak2">0</strong></div>
+   <div class="stat"><div class="eyebrow">Jack count</div><strong id="jackTotal">0</strong></div>
+  </div>
+ </div>
+ <div class="card quest">
+  <div class="eyebrow">Daily quest // 01</div><h2>PROVE YOUR CONSISTENCY</h2><p id="questText">Clear 3 workouts to complete this quest.</p>
+  <div class="track"><div id="questBar" class="fill"></div></div>
+  <div class="row"><small class="eyebrow" id="questCount">0 / 3</small><b class="gold">+250 XP</b></div>
+ </div>
+ <div class="card"><div class="eyebrow">Rank ladder</div><div id="rankList"></div></div>
+</section>
+
+<section class="view hidden" id="historyView">
+ <div class="card"><div class="eyebrow">Operator log</div><h1>MISSION HISTORY</h1><p>Recent workouts and system events are stored locally on this device.</p>
+ <div id="historyList"><p>No mission logs yet. Complete a workout to begin.</p></div>
+ <button class="primary full" id="exportData">EXPORT MY DATA</button>
+ <button class="full" id="clearHistory">CLEAR HISTORY LOG</button>
+ </div>
+</section>
+
+<section class="view hidden" id="settingsView">
+ <div class="card"><div class="eyebrow">System configuration</div><h1>SETTINGS</h1>
+  <div class="setting row"><div><b>Spoken announcements</b><p>Voice prompts and success announcements.</p></div><button class="switch on" id="voiceSwitch" aria-label="Toggle voice"></button></div>
+  <div class="setting row"><div><b>Vibration feedback</b><p>Haptic alerts where supported.</p></div><button class="switch on" id="vibeSwitch" aria-label="Toggle vibration"></button></div>
+  <div class="setting row"><div><b>Reduced motion</b><p>Reduce interface animations.</p></div><button class="switch" id="motionSwitch" aria-label="Toggle reduced motion"></button></div>
+  <button class="goldbtn full" id="resetMission">RESTART 24-HOUR TIMER</button>
+  <button class="danger full" id="resetAll">RESET ALL PLAYER DATA</button>
+ </div>
+ <div class="card"><div class="eyebrow">Safety protocol</div><p>This app is a game timer, not a medical assessment. Do not exercise continuously for 24 hours. Rest, hydrate, avoid traffic, and stop if you feel dizzy, faint, unusually short of breath, or experience pain. Failure screens never require you to perform an exercise.</p></div>
+</section>
+</main>
+</div>
+
+<nav class="nav">
+ <button class="active" data-view="home"><span>⌂</span>COMMAND</button>
+ <button data-view="progressView"><span>⬆</span>PROGRESS</button>
+ <button data-view="historyView"><span>▤</span>HISTORY</button>
+ <button data-view="settingsView"><span>⚙</span>SETTINGS</button>
+</nav>
+
+<div id="successOverlay" class="overlay hidden"><div class="box"><h1 style="color:var(--green)">GOOD JOB!</h1><p>WORKOUT COMPLETE. +100 XP</p><button class="primary full" id="successContinue">CONTINUE</button></div></div>
+<div id="gameOverOverlay" class="overlay gameover hidden"><div class="box"><div style="font-size:40px">☠</div><h1>GAME OVER</h1><p>TIME TO JUMP. NO STOPPING.</p><p>Game prompt only. You can skip or rest at any time.</p><button class="danger full" id="skipPenalty">DISMISS / REST</button><button class="full" id="openCounter">OPEN 200-JACK COUNTER</button></div></div>
+<div id="breakOverlay" class="overlay hidden"><div class="box"><h1 class="gold">RECOVERY CHECKPOINT</h1><p>You have completed six workouts. Hydrate and check in with your body.</p><button class="goldbtn full" id="takeBreak">TAKE A BREAK</button><button class="full" id="continueTraining">CONTINUE WHEN READY</button></div></div>
+<div id="penaltyOverlay" class="overlay hidden"><div class="box"><h1 class="gold">JACK COUNTER</h1><div class="bigtime"><span id="penaltyCount">200</span></div><p>Optional counter. You never have to complete it to continue using the app.</p><button class="goldbtn full" id="countJack">COUNT ONE</button><button class="full" id="closeCounter">CLOSE</button></div></div>
+<div id="toast" class="hidden"></div>
+
+<script>
+(()=>{
+"use strict";
+const $=id=>document.getElementById(id);
+const KEY="overlord_full_app_v1";
+const ranks=[["ROOKIE OPERATIVE",0],["FIELD RECRUIT",250],["ELITE RUNNER",650],["SHADOW AGENT",1200],["CYBER COMMANDER",2000],["OVERLORD ASCENDANT",3500]];
+const exercises=[
+ ["20 BODYWEIGHT SQUATS","Keep your balance and use a comfortable range of motion."],
+ ["10–20 PUSH-UPS","Use a comfortable variation, including knee push-ups."],
+ ["30-SECOND PLANK","Keep breathing. Stop if your back hurts."],
+ ["10 LUNGES PER SIDE","Use controlled steps on a clear, level surface."],
+ ["20 CALF RAISES","Move slowly and maintain your balance."],
+ ["60-SECOND SHADOWBOXING","Move lightly and keep your surroundings clear."],
+ ["15 GLUTE BRIDGES","Use a comfortable, level surface."],
+ ["30-SECOND MARCH IN PLACE","Choose a comfortable pace."]
+];
+let xp=0,streak=0,completed=0,failures=0,jacks=0,penalty=200,questClaimed=false;
+let history=[],sound=true,vibe=true,reduceMotion=false;
+let started=Date.now(),ends=started+86400000,workoutEnd=0,nextOrder=Date.now()+180000;
+let active=false,missionDone=false,breakShown=false,lastExercise=-1,triggeredDay="";
+let movingDismissed="",movingActive=false,successPending=false,toastTimer;
+function load(){try{let d=JSON.parse(localStorage.getItem(KEY)||"{}");xp=d.xp||0;streak=d.streak||0;completed=d.completed||0;failures=d.failures||0;jacks=d.jacks||0;penalty=d.penalty??200;questClaimed=!!d.questClaimed;history=Array.isArray(d.history)?d.history:[];sound=d.sound!==false;vibe=d.vibe!==false;reduceMotion=!!d.reduceMotion;started=d.started||Date.now();ends=d.ends||started+86400000;movingDismissed=d.movingDismissed||"";}catch(e){}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify({xp,streak,completed,failures,jacks,penalty,questClaimed,history:history.slice(0,100),sound,vibe,reduceMotion,started,ends,movingDismissed}));}catch(e){}}
+function say(t){if(!sound||!window.speechSynthesis)return;try{speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(t);u.rate=1.03;speechSynthesis.speak(u);}catch(e){}}
+function buzz(p=70){if(vibe&&navigator.vibrate)try{navigator.vibrate(p)}catch(e){}}
+function tone(ok=true){if(!sound)return;try{let C=window.AudioContext||window.webkitAudioContext;if(!C)return;let c=new C(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type=ok?"sine":"sawtooth";o.frequency.value=ok?720:150;g.gain.value=.08;o.start();o.stop(c.currentTime+.22);o.onended=()=>c.close();}catch(e){}}
+function notify(t){$("toast").textContent=t;$("toast").classList.remove("hidden");clearTimeout(toastTimer);toastTimer=setTimeout(()=>$("toast").classList.add("hidden"),2200);}
+function log(type,title,detail,x=0){history.unshift({type,title,detail,x,when:new Date().toLocaleString()});history=history.slice(0,100);save();renderHistory();}
+function renderHistory(){let el=$("historyList");if(!history.length){el.innerHTML="<p>No mission logs yet. Complete a workout to begin.</p>";return;}el.innerHTML=history.slice(0,30).map(h=>`<div class="history-item"><div class="history-icon ${h.type==="fail"?"fail":""}">${h.type==="success"?"✓":h.type==="fail"?"!":"✦"}</div><div class="history-detail"><strong>${esc(h.title)}</strong><small>${esc(h.when)} · ${esc(h.detail||"System event")}</small></div><b class="gold">${h.x?"+ "+h.x+" XP":""}</b></div>`).join("");}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function rank(){let r=ranks[0];for(const x of ranks)if(xp>=x[1])r=x;return r;}
+function render(){let r=rank(),i=ranks.findIndex(x=>x===r),next=ranks[i+1];$("rankName").textContent=r[0];$("xp").textContent=xp;$("totalXP").textContent=xp;$("streak").textContent=streak;$("streak2").textContent=streak;$("completed").textContent=completed;$("failures").textContent=failures;$("jacks").textContent=jacks;$("jackTotal").textContent=jacks;$("jackBar").style.width=Math.min(100,jacks/200*100)+"%";$("rankBar");$("xpBar").style.width=next?Math.min(100,(xp-r[1])/(next[1]-r[1])*100)+"%":"100%";$("rankProgress").textContent=next?`${xp-r[1]} / ${next[1]-r[1]} XP TO NEXT RANK`:"MAX RANK REACHED";$("questBar").style.width=Math.min(100,completed/3*100)+"%";$("questCount").textContent=Math.min(3,completed)+" / 3 CLEARED";$("questText").textContent=questClaimed?"QUEST COMPLETE — BONUS CLAIMED":completed>=3?"Quest complete! +250 XP awarded.":`Clear ${3-completed} more workout(s) to earn the bonus.`;$("rankList").innerHTML=ranks.map(a=>`<div class="row" style="padding:13px 0;border-bottom:1px solid var(--border)"><b style="font-size:12px;color:${xp>=a[1]?"var(--green)":"var(--muted)"}">${a[0]}</b><span class="eyebrow">${a[1]} XP ${xp>=a[1]?"✓":""}</span></div>`).join("");$("voiceSwitch").classList.toggle("on",sound);$("vibeSwitch").classList.toggle("on",vibe);$("motionSwitch").classList.toggle("on",reduceMotion);save();}
+function award(n,reason){let old=rank()[0];xp+=n;render();log("event",reason,`Experience earned: ${n}`,n);if(rank()[0]!==old){say("Rank up. New rank "+rank()[0]);notify("RANK UP: "+rank()[0]);buzz([100,60,100]);}}
+function showView(id){document.querySelectorAll("main .view").forEach(v=>v.classList.toggle("hidden",v.id!==id));document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.view===id));window.scrollTo({top:0,behavior:reduceMotion?"auto":"smooth"});}
+document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>showView(b.dataset.view));
+function startWorkout(){if(active||missionDone||!$("breakOverlay").classList.contains("hidden"))return;active=true;successPending=false;let i;do{i=Math.floor(Math.random()*exercises.length)}while(i===lastExercise&&exercises.length>1);lastExercise=i;$("exercise").textContent=exercises[i][0];$("instructions").textContent=exercises[i][1];workoutEnd=Date.now()+300000;$("workoutCard").classList.remove("hidden");$("directive").textContent="ORDER ACTIVE.";log("event","Workout started",exercises[i][0]);buzz();tone();say("New workout order. "+exercises[i][0]);}
+function closeWorkout(){active=false;$("workoutCard").classList.add("hidden");}
+function success(){if(!active)return;closeWorkout();completed++;streak++;award(100,"Workout cleared");log("success","Workout cleared","Workout completed",0);$("successOverlay").classList.remove("hidden");tone(true);buzz([100,50,100,50,200]);say("Good job!");if(completed>=3&&!questClaimed){questClaimed=true;xp+=250;render();log("event","Daily quest completed","Bonus XP",250);say("Daily quest complete. Bonus experience awarded.");}successPending=true;if(completed%6===0){setTimeout(()=>{if(successPending){$("successOverlay").classList.add("hidden");$("breakOverlay").classList.remove("hidden");say("Six workouts completed. Consider taking a break.");}},1300);}else setTimeout(()=>{if(successPending){$("successOverlay").classList.add("hidden");nextOrder=Date.now()+180000;}},1300);render();}
+function failure(){if(missionDone)return;closeWorkout();failures++;streak=0;award(5,"Failure logged");log("fail","Workout failed","Failure screen opened");$("gameOverOverlay").classList.remove("hidden");tone(false);buzz([250,100,250,100,400]);say("Game over. Time to jump. No stopping.");}
+function closeFailure(){ $("gameOverOverlay").classList.add("hidden");nextOrder=Date.now()+180000; }
+$("startWorkout").onclick=startWorkout;
+$("successBtn").onclick=success;
+$("failBtn").onclick=failure;
+$("jogFail").onclick=failure;
+$("successContinue").onclick=()=>{$("successOverlay").classList.add("hidden");successPending=false;nextOrder=Date.now()+180000;};
+$("skipPenalty").onclick=closeFailure;
+$("openCounter").onclick=()=>{$("gameOverOverlay").classList.add("hidden");$("penaltyOverlay").classList.remove("hidden");};
+$("countJack").onclick=()=>{if(penalty>0)penalty--; $("penaltyCount").textContent=penalty;buzz(30);if(penalty===0){say("Counter complete. Good job. Take a rest.");tone(true);}save();};
+$("closeCounter").onclick=()=>{$("penaltyOverlay").classList.add("hidden");nextOrder=Date.now()+180000;};
+$("takeBreak").onclick=()=>{$("breakOverlay").classList.add("hidden");successPending=false;nextOrder=Number.MAX_SAFE_INTEGER;notify("Break selected. Start a workout when ready.");};
+$("continueTraining").onclick=()=>{$("breakOverlay").classList.add("hidden");successPending=false;nextOrder=Date.now()+180000;};
+$("addJacks").onclick=()=>{jacks=Math.min(200,jacks+10);render();if(jacks===200){say("Two hundred counter reached.");tone(true);}};
+$("resetJacks").onclick=()=>{jacks=0;render();};
+$("doneMoving").onclick=()=>{movingDismissed=new Date().toDateString();movingActive=false;$("moving").classList.add("hidden");save();};
+$("voiceSwitch").onclick=()=>{sound=!sound;render();notify("VOICE "+(sound?"ON":"OFF"));};
+$("vibeSwitch").onclick=()=>{vibe=!vibe;render();buzz();notify("VIBRATION "+(vibe?"ON":"OFF"));};
+$("motionSwitch").onclick=()=>{reduceMotion=!reduceMotion;document.body.style.scrollBehavior=reduceMotion?"auto":"";render();};
+$("resetMission").onclick=()=>{if(!confirm("Restart the 24-hour mission timer? Your XP and history remain."))return;started=Date.now();ends=started+86400000;missionDone=false;nextOrder=Date.now()+180000;active=false;$("workoutCard").classList.add("hidden");notify("MISSION TIMER RESTARTED");save();};
+$("resetAll").onclick=()=>{if(!confirm("Erase all XP, stats, and history from this device?"))return;xp=streak=completed=failures=jacks=0;penalty=200;questClaimed=false;history=[];started=Date.now();ends=started+86400000;missionDone=false;save();render();renderHistory();notify("PLAYER DATA RESET");};
+$("exportData").onclick=()=>{let blob=new Blob([JSON.stringify({app:"AI Overlord",exportedAt:new Date().toISOString(),xp,streak,completed,failures,jacks,history},null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="overlord-player-data.json";a.click();URL.revokeObjectURL(url);};
+$("clearHistory").onclick=()=>{if(confirm("Clear mission history? Your XP and stats will remain.")){history=[];save();renderHistory();}};
+function fmt(ms,hour=true){let s=Math.max(0,Math.ceil(ms/1000)),h=Math.floor(s/3600),m=Math.floor(s%3600/60),ss=s%60;return hour?[h,m,ss].map(n=>String(n).padStart(2,"0")).join(":"):[Math.floor(s/60),ss].map(n=>String(n).padStart(2,"0")).join(":");}
+function tick(){let now=Date.now(),d=new Date(),left=ends-now;$("missionTimer").textContent=fmt(left);$("missionBar").style.width=Math.max(0,left/86400000*100)+"%";$("clock").textContent=d.toLocaleTimeString();$("date").textContent=d.toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric",year:"numeric"});let midnight=new Date(d);midnight.setHours(24,0,0,0);$("midnight").textContent=fmt(midnight-now);let today=d.toDateString();movingActive=d.getHours()>=7&&movingDismissed!==today;$("moving").classList.toggle("hidden",!movingActive);if(!missionDone&&left<=0){missionDone=true;active=false;$("workoutCard").classList.add("hidden");$("directive").textContent="MISSION COMPLETE.";notify("24-HOUR MISSION COMPLETE");say("Mission complete.");}if(!missionDone&&active){let rem=workoutEnd-now;$("workoutTimer").textContent=fmt(rem,false);$("workoutBar").style.width=Math.max(0,(300000-rem)/300000*100)+"%";if(rem<=0)failure();}if(!missionDone&&!active&&now>=nextOrder&&$("breakOverlay").classList.contains("hidden"))startWorkout();$("nextOrder").textContent=active?"WORKOUT ORDER ACTIVE":nextOrder===Number.MAX_SAFE_INTEGER?"BREAK SELECTED — RESUME WHEN READY":"NEXT ORDER: "+Math.max(0,Math.ceil((nextOrder-now)/60000))+" MIN";$("systemStatus").textContent=missionDone?"MISSION COMPLETE":active?"ORDER ACTIVE":"SYSTEM ONLINE";}
+load();render();renderHistory();tick();setInterval(tick,250);
+})();
+</script>
+</body>
+</html>
